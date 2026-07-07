@@ -1,6 +1,8 @@
-# These are the file paths used 
-DATA_DIR = "../Data"
-BUSTABIT_DATA_FILE = f"{DATA_DIR}/bustabit.csv"
+from pathlib import Path
+
+# These are the file paths used
+DATA_DIR = Path(__file__).resolve().parents[2] / "Data"
+BUSTABIT_DATA_FILE = DATA_DIR / "bustabit.csv"
 
 #Bustabit data scheme and columns
 DATA_COLUMNS = ['Bet','CashedOut', 'Bonus', 'Profit', 'BustedAt']
