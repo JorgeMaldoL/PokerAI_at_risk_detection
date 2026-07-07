@@ -31,5 +31,7 @@ source venv/bin/activate
 ### 3. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install -e ".[dev]"
 ```
+
+This installs the project's dependencies (pandas, seaborn, matplotlib, scipy), the `jupyter`/`jupyterlab` dev tooling, and makes `poker_coach` (the code in `src/poker_coach`) importable from the notebooks.

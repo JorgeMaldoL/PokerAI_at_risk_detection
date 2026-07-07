@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "poker_coach_with_addiction_screening"
+version = "0.1.0"
+authors = [
+    {name="Jorge Maldonado", email="Maldonadoj747@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+description = "An AI poker coach that both teaches poker and screens users for potential gambling-related behavioral issues"
+dependencies = [
+    "pandas>=2.0",
+    "seaborn>=0.13",
+    "matplotlib>=3.8",
+    "scipy>=1.10",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyter>=1.0",
+    "jupyterlab>=4.0",
+    "ipykernel>=6.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
