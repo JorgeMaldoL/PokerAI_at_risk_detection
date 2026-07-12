@@ -8,6 +8,7 @@ __file__ — the location of config.py itself
 .parents[2] — go up two folders (from config.py → poker_coach → src → project root)
 / "Data" — then go into the Data folder
 """
+
 BUSTABIT_DATA_FILE = DATA_DIR / "bustabit.csv"
 
 #Bustabit data scheme and columns
