@@ -43,12 +43,16 @@ Your IDE needs to know to use the venv's Python, not your system Python. If you 
 **VS Code:**
 - Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
 - Type `Python: Select Interpreter`
-- Pick the one from your venv (it'll show a path with `/venv/bin/python`)
+- Pick the one from your venv:
+  - **Mac/Linux:** `./venv/bin/python`
+  - **Windows:** `./venv/Scripts/python.exe`
 
 **PyCharm:**
 - Go to PyCharm → Settings → Project → Python Interpreter
 - Click the ⚙️ icon and choose "Add..."
-- Select "Existing Environment" and pick `venv/bin/python`
+- Select "Existing Environment" and pick:
+  - **Mac/Linux:** `venv/bin/python`
+  - **Windows:** `venv/Scripts/python.exe`
 
 **Other editors:**
 Look for a way to set your project's Python interpreter path to `./venv/bin/python` (Mac/Linux) or `./venv/Scripts/python.exe` (Windows). This is usually in settings under "Python" or "Interpreter."
