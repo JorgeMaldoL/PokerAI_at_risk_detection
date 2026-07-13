@@ -1,6 +1,7 @@
 .config/
 sample_data/
 .venv/
+venv/
 __pycache__/
 *.egg-info/
 .ipynb_checkpoints/
