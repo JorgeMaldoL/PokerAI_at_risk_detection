@@ -8,6 +8,11 @@ BUSTABIT_DATA_FILE = DATA_DIR / "bustabit.csv"
 DATA_COLUMNS = ['Bet','CashedOut', 'Bonus', 'Profit', 'BustedAt']
 ID_COLS = ['Id', 'GameID']
 
+# Bet, Bonus, and Profit are recorded in "bits" (1 bit = 0.000001 BTC). CashedOut and
+# BustedAt are payout multipliers, not currency, so they're never converted.
+BITS_PER_BTC = 1_000_000
+BTC_USD_RATE = 750  # approx. BTC/USD price over the dataset's Nov-Dec 2016 window
+
 # Shared Visualization Palettes
 GRAPE_SODA = "#8a4f7d"
 MUTED_TEAL = "#88a096"

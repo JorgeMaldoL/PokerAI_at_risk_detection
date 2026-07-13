@@ -15,7 +15,8 @@ def rainbow(data, n=None, mode=None):
     palette = sns.color_palette('pastel', len(cols)).as_hex()
 
     #formatting by ading commas and decimal places to the columns about money
-    styles = d.style.format('{:,.2f}', subset=DATA_COLUMNS)
+    money_cols = [c for c in DATA_COLUMNS if c in d.columns]
+    styles = d.style.format('{:,.2f}', subset=money_cols)
 
     #coloring each rows text
     for col, color in zip(cols, palette):
