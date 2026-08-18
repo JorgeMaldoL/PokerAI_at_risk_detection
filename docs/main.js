@@ -107,7 +107,31 @@ function buildContactLinks(person) {
         contactList.appendChild(linkedinLink);
     }
 
+    if (person.resume) {
+        const resumeLink = document.createElement("a");
+        resumeLink.href = person.resume;
+        resumeLink.textContent = "Download Resume";
+        resumeLink.target = "_blank";
+        resumeLink.rel = "noopener noreferrer";
+        contactList.appendChild(resumeLink);
+    }
+
     return contactList;
+}
+
+function buildEducationSection(education) {
+    const section = document.createElement("div");
+    section.className = "education-section";
+
+    const heading = document.createElement("h3");
+    heading.textContent = "Education";
+    section.appendChild(heading);
+
+    const text = document.createElement("p");
+    text.textContent = education;
+    section.appendChild(text);
+
+    return section;
 }
 
 function buildTeamMemberCard(person) {
@@ -159,7 +183,10 @@ function buildTeamMemberCard(person) {
 
     card.appendChild(chipRow);
 
-    // --- skills and projects ---------------------------------------------
+    // --- education, skills, and projects ----------------------------------
+    if (person.education) {
+        card.appendChild(buildEducationSection(person.education));
+    }
     card.appendChild(buildSkillsSection(person.skills));
     card.appendChild(buildProjectsSection(person.projects));
 
