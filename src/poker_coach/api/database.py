@@ -61,9 +61,9 @@ def init_db() -> None:
                 "stack_size": 100.0,
                 "opponent_action": "Opponent bets half pot",
                 "gto_strategy": {
-                    "fold": 0.15,
-                    "call": 0.55,
-                    "raise": 0.30
+                    "fold": 15.0,
+                    "call": 55.0,
+                    "raise": 30.0
                 },
             },
             {
@@ -74,9 +74,9 @@ def init_db() -> None:
                 "stack_size": 95.0,
                 "opponent_action": "Opponent checks",
                 "gto_strategy": {
-                    "fold": 0.05,
-                    "call": 0.25,
-                    "raise": 0.70
+                    "fold": 5.0,
+                    "call": 25.0,
+                    "raise": 70.0
                 },
             },
             {
@@ -87,9 +87,9 @@ def init_db() -> None:
                 "stack_size": 80.0,
                 "opponent_action": "Opponent raises preflop",
                 "gto_strategy": {
-                    "fold": 0.45,
-                    "call": 0.45,
-                    "raise": 0.10
+                    "fold": 45.0,
+                    "call": 45.0,
+                    "raise": 10.0
                 },
             },
             {
@@ -100,9 +100,9 @@ def init_db() -> None:
                 "stack_size": 90.0,
                 "opponent_action": "Opponent calls",
                 "gto_strategy": {
-                    "fold": 0.20,
-                    "call": 0.50,
-                    "raise": 0.30
+                    "fold": 20.0,
+                    "call": 50.0,
+                    "raise": 30.0
                 },
             },
         ]
@@ -140,6 +140,16 @@ def get_random_scenario(conn: sqlite3.Connection) -> dict | None:
     result = dict(row)
     result["gto_strategy"] = json.loads(result["gto_strategy"])
     return result
+
+
+def list_scenarios(conn: sqlite3.Connection) -> list[dict]:
+    rows = conn.execute("SELECT * FROM scenarios").fetchall()
+    results = []
+    for row in rows:
+        result = dict(row)
+        result["gto_strategy"] = json.loads(result["gto_strategy"])
+        results.append(result)
+    return results
 
 
 def get_scenario_by_id(conn: sqlite3.Connection, scenario_id: int) -> dict | None:

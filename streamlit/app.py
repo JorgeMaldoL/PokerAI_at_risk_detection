@@ -9,6 +9,12 @@ import streamlit.components.v1 as components
 try: import joblib
 except ImportError: joblib=None
 
+import rag
+import risk_model
+
+ACTION_LABEL_TO_RAW={'Fold':'fold','Check/Call':'call','Bet/Raise':'bet'}
+RISK_HANDS_THRESHOLD=10
+
 st.set_page_config(page_title='Poker Arena',page_icon='♠️',layout='wide')
 API=os.getenv('POKER_API_URL','http://localhost:8000')
 WS=API.replace('http://','ws://').replace('https://','wss://')
@@ -20,7 +26,122 @@ def card_html(c:Optional[str], hidden=False):
     cl='red' if c[1] in '♥♦' else 'black'; return f'<div class="card {cl}"><b>{c[0]}</b><span>{c[1]}</span></div>'
 
 st.markdown('''<style>
-.main-title{font-size:2.4rem;font-weight:850}.sub{color:#94a3b8}.table{background:radial-gradient(circle,#16834d,#075c38 72%);border:9px solid #5c3b22;border-radius:46%;padding:24px;min-height:390px}.cards,.board{display:flex;justify-content:center;gap:8px;min-height:92px}.board{margin:22px 0}.card{width:62px;height:88px;background:#fff;border-radius:9px;padding:7px;display:flex;flex-direction:column;justify-content:space-between;font-size:23px;box-shadow:0 6px 15px #0005}.red{color:#dc2626}.black{color:#111}.back{background:repeating-linear-gradient(45deg,#1e3a8a,#1e3a8a 8px,#2563eb 8px,#2563eb 16px);color:#fff;align-items:center;justify-content:center}.empty{background:#ffffff22;box-shadow:none}.name{text-align:center;color:white;font-weight:800}.pill{text-align:center;color:white}.status{padding:14px;border:1px solid #3b82f640;background:#3b82f615;border-radius:12px}.coach{padding:14px;border:1px solid #22c55e55;background:#22c55e12;border-radius:12px;margin-top:10px}
+.main-title{
+    font-size: 2.4rem;
+    font-weight: 850;
+    margin-bottom: 0.1rem;
+}
+.sub{
+    color: #94a3b8;
+    margin-bottom: 1.4rem;
+}
+.table{
+    background: radial-gradient(circle, #16834d, #075c38 72%);
+    border: 9px solid #5c3b22;
+    border-radius: 46%;
+    padding: 32px 24px;
+    min-height: 390px;
+    margin-bottom: 1.2rem;
+}
+.cards, .board{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    min-height: 92px;
+}
+.board{ margin: 26px 0; }
+.card{
+    width: 62px;
+    height: 88px;
+    background: #fff;
+    border-radius: 9px;
+    padding: 7px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 23px;
+    box-shadow: 0 6px 15px #0005;
+}
+.red{ color: #dc2626; }
+.black{ color: #111; }
+.back{
+    background: repeating-linear-gradient(45deg, #1e3a8a, #1e3a8a 8px, #2563eb 8px, #2563eb 16px);
+    color: #fff;
+    align-items: center;
+    justify-content: center;
+}
+.empty{ background: #ffffff22; box-shadow: none; }
+.name{
+    text-align: center;
+    color: white;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+}
+.pill{
+    text-align: center;
+    color: white;
+    margin: 0.6rem 0;
+}
+.status{
+    padding: 16px;
+    border: 1px solid #3b82f640;
+    background: #3b82f615;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+.coach{
+    padding: 16px;
+    border: 1px solid #22c55e55;
+    background: #22c55e12;
+    border-radius: 12px;
+    margin-top: 14px;
+    line-height: 1.6;
+}
+.decision-review-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 0.6rem 0 1rem 0;
+}
+.decision-review-card{
+    padding: 14px;
+    border: 1px solid #ffffff1a;
+    background: #ffffff08;
+    border-radius: 12px;
+    text-align: center;
+}
+.decision-review-label{
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+}
+.decision-review-value{
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+.decision-action-value{ text-transform: capitalize; }
+.rag-hit{
+    padding: 10px 14px;
+    border: 1px solid #94a3b840;
+    background: #94a3b812;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+.risk-panel{
+    padding: 16px;
+    border: 1px solid #f59e0b55;
+    background: #f59e0b12;
+    border-radius: 12px;
+    margin-top: 10px;
+    line-height: 1.6;
+}
+.section-gap{ margin-top: 1.8rem; }
+div[data-testid="stMetric"]{
+    background: #ffffff08;
+    border-radius: 10px;
+    padding: 10px 6px;
+}
 </style>''',unsafe_allow_html=True)
 st.markdown('<div class="main-title">♠️ Poker Arena</div><div class="sub">Play against the computer or challenge another player live.</div>',unsafe_allow_html=True)
 
@@ -73,30 +194,20 @@ def show_learning(feedback, title='Decision Review'):
         return
     st.markdown(f'### {title}')
     st.markdown(
-    f"""
-    <div class="decision-review-grid">
-        <div class="decision-review-card">
-            <div class="decision-review-label">Decision score</div>
-            <div class="decision-review-value">
-                {feedback['score']}/100
-            </div>
-        </div>
-
-        <div class="decision-review-card">
-            <div class="decision-review-label">Suggested action</div>
-            <div class="decision-review-value decision-action-value">
-                {feedback['best_action']}
-            </div>
-        </div>
-
-        <div class="decision-review-card">
-            <div class="decision-review-label">Estimated strength</div>
-            <div class="decision-review-value">
-                {feedback['estimated_strength']:.0%}
-            </div>
-        </div>
-    </div>
-    """,
+f"""<div class="decision-review-grid">
+<div class="decision-review-card">
+<div class="decision-review-label">Decision score</div>
+<div class="decision-review-value">{feedback['score']}/100</div>
+</div>
+<div class="decision-review-card">
+<div class="decision-review-label">Suggested action</div>
+<div class="decision-review-value decision-action-value">{feedback['best_action']}</div>
+</div>
+<div class="decision-review-card">
+<div class="decision-review-label">Estimated strength</div>
+<div class="decision-review-value">{feedback['estimated_strength']:.0%}</div>
+</div>
+</div>""",
     unsafe_allow_html=True,
 )
     st.write(f"**You chose:** {feedback['chosen_action']}")
@@ -104,7 +215,28 @@ def show_learning(feedback, title='Decision Review'):
         st.write(f'{label} — {value}%')
         st.progress(value/100)
     st.markdown(f"<div class='coach'><b>Why:</b> {feedback['explanation']}</div>",unsafe_allow_html=True)
-    st.caption('These frequencies are educational heuristics, not exact solver-approved GTO outputs.')
+    st.caption('These frequencies blend local heuristics with retrieved reference spots, not exact solver-approved GTO outputs.')
+
+    coaching=feedback.get('coaching')
+    if coaching:
+        verdict=coaching.get('verdict','n/a')
+        icon={'good':'✅','okay':'🟡','mistake':'🔴'}.get(verdict,'ℹ️')
+        st.markdown(
+            f"<div class='coach'><b>{icon} AI verdict — {verdict}</b> · <i>{coaching.get('concept','')}</i>"
+            f"<br>{coaching.get('summary','')}<br><b>Next time:</b> {coaching.get('advice','')}</div>",
+            unsafe_allow_html=True,
+        )
+
+    similar=feedback.get('similar')
+    if similar:
+        with st.expander('📎 Similar solver spots (retrieved)'):
+            for s in similar:
+                gto=', '.join(f'{k}: {v:.0f}%' for k,v in s['gto_strategy'].items())
+                st.markdown(
+                    f"<div class='rag-hit'><b>{s['board']}</b> · {s['position']} · {s.get('opponent_action','')}"
+                    f"<br>GTO: {gto}</div>",
+                    unsafe_allow_html=True,
+                )
 
 def commit(who,amt):
     key='pstack' if who=='p' else 'bstack'; paid=min(amt,b(key)); bs(key,b(key)-paid); bs('pot',b('pot')+paid); return paid
@@ -115,7 +247,7 @@ def bot_new():
     else: commit('b',.5); bs('to_call',0); bs('msg','Computer calls. Check or raise.')
 
 def bot_award(winner,text):
-    key='pstack' if winner=='p' else 'bstack'; bs(key,b(key)+b('pot')); pot=b('pot'); bs('pot',0); bs('over',True); bs('hands',b('hands')+1); bs('show',True); bs('msg',text+f' Pot: {pot:.1f} BB'); bs('wins',b('wins')+(1 if winner=='p' else 0))
+    key='pstack' if winner=='p' else 'bstack'; bs(key,b(key)+b('pot')); pot=b('pot'); bs('pot',0); bs('over',True); bs('hands',b('hands')+1); bs('show',True); bs('msg',text+f' Pot: {pot:.1f} chips'); bs('wins',b('wins')+(1 if winner=='p' else 0))
 
 def advance():
     if b('street')=='Preflop': b('board').extend([b('deck').pop() for _ in range(3)]); bs('street','Flop')
@@ -128,22 +260,30 @@ def advance():
         return
     bs('to_call',0)
     if random.random() < strength(b('bh'),b('board'))*.55:
-        bet=commit('b',max(1,round(b('pot')*.5,1))); bs('to_call',bet); bs('msg',f'{b("street")}: computer bets {bet:.1f} BB.')
+        bet=commit('b',max(1,round(b('pot')*.5,1))); bs('to_call',bet); bs('msg',f'{b("street")}: computer bets {bet:.1f} chips.')
     else: bs('msg',f'{b("street")}: computer checks. Your turn.')
 
-def bot_action(action,f=.5):
+def bot_action(action,f=.5,amount=None):
     feedback=coach_feedback(b('ph'),b('board'),b('pot'),b('to_call'),action,b('street'))
+    opponent_action='Computer bet/raised' if b('to_call')>0 else 'Computer checked'
+    feedback=rag.enrich(feedback,board=' '.join(b('board')),hole_cards=' '.join(b('ph')),
+                         opponent_action=opponent_action,pot=b('pot'),stack=b('pstack'),raw_action=action)
     bs('feedback',feedback); bs('decision_scores',b('decision_scores')+[feedback['score']])
     if action=='fold': bs('folds',b('folds')+1); bot_award('b','You folded.'); return
     if action=='call':
-        if b('to_call')>0: bs('calls',b('calls')+1); commit('p',b('to_call')); bs('to_call',0)
+        call_amt=b('to_call')
+        if call_amt>0:
+            bs('calls',b('calls')+1); commit('p',call_amt); bs('to_call',0); bs('history',b('history')+[call_amt])
         advance(); return
-    bs('raises',b('raises')+1); amt=commit('p',b('to_call')+max(1,round(b('pot')*f,1))); bs('to_call',0)
+    bs('raises',b('raises')+1)
+    raise_amt=amount if amount is not None else max(1,round(b('pot')*f,1))
+    bs('history',b('history')+[raise_amt])
+    amt=commit('p',b('to_call')+raise_amt); bs('to_call',0)
     if random.random()>strength(b('bh'),b('board'))+.12: bot_award('p','Computer folded.')
     else: commit('b',amt); advance()
 
 def render_table(top_name,top_stack,top_cards,board,bottom_cards,bottom_name,bottom_stack,street,pot):
-    st.markdown(f'''<div class="table"><div class="name">{top_name} · {top_stack:.1f} BB</div><div class="cards">{''.join(top_cards)}</div><div class="board">{''.join(board)}</div><div class="pill">{street} · Pot {pot:.1f} BB</div><div class="cards">{''.join(bottom_cards)}</div><div class="name">{bottom_name} · {bottom_stack:.1f} BB</div></div>''',unsafe_allow_html=True)
+    st.markdown(f'''<div class="table"><div class="name">{top_name} · 🪙 {top_stack:.1f}</div><div class="cards">{''.join(top_cards)}</div><div class="board">{''.join(board)}</div><div class="pill">{street} · Pot 🪙 {pot:.1f}</div><div class="cards">{''.join(bottom_cards)}</div><div class="name">{bottom_name} · 🪙 {bottom_stack:.1f}</div></div>''',unsafe_allow_html=True)
 
 if mode.startswith('🤖'):
     init_bot()
@@ -152,8 +292,9 @@ if mode.startswith('🤖'):
         for k in list(st.session_state):
             if k.startswith('bot_'): del st.session_state[k]
         st.rerun()
-    m=st.columns(5); vals=[('You',f'{b("pstack"):.1f} BB'),('Computer',f'{b("bstack"):.1f} BB'),('Pot',f'{b("pot"):.1f} BB'),('Hands',b('hands')),('Wins',b('wins'))]
+    m=st.columns(5); vals=[('You 🪙',f'{b("pstack"):.1f}'),('Computer 🪙',f'{b("bstack"):.1f}'),('Pot 🪙',f'{b("pot"):.1f}'),('Hands',b('hands')),('Wins',b('wins'))]
     for c,(x,y) in zip(m,vals): c.metric(x,y)
+    st.markdown('<div class="section-gap"></div>',unsafe_allow_html=True)
     l,r=st.columns([1.55,1]);
     with l:
         render_table('COMPUTER',b('bstack'),[card_html(c,not b('show')) for c in b('bh')] or [card_html(None),card_html(None)],[card_html(c) for c in b('board')]+[card_html(None)]*(5-len(b('board'))),[card_html(c) for c in b('ph')] or [card_html(None),card_html(None)],'YOU',b('pstack'),b('street'),b('pot'))
@@ -167,9 +308,29 @@ if mode.startswith('🤖'):
             c4,c5=st.columns(2)
             if c4.button('¾ Pot',use_container_width=True): bot_action('bet',.75); st.rerun()
             if c5.button('Pot',use_container_width=True): bot_action('bet',1); st.rerun()
+            cust_col,btn_col=st.columns([2,1])
+            custom_bet=cust_col.number_input('🪙 Custom bet',min_value=1.0,max_value=max(1.0,b('pstack')),
+                                              value=min(max(1.0,round(b('pot')*.5,1)),max(1.0,b('pstack'))),
+                                              step=1.0,label_visibility='visible',key='bot_custom_bet_input')
+            btn_col.markdown('<div style="height:1.6rem"></div>',unsafe_allow_html=True)
+            if btn_col.button('Bet',use_container_width=True): bot_action('bet',amount=custom_bet); st.rerun()
         else: st.info('Start a new hand.')
         if coach_on:
             show_learning(b('feedback'))
+
+        if len(b('history'))>=RISK_HANDS_THRESHOLD:
+            avg_bet=sum(b('history'))/len(b('history')); max_bet=max(b('history'))
+            win_rate=b('wins')/max(1,b('hands')); total_profit=b('pstack')-100.0
+            risk=risk_model.predict_risk_tier(avg_bet,max_bet,win_rate,total_profit)
+            with st.expander('🔍 Session insights (beta)'):
+                st.markdown(
+                    f"<div class='risk-panel'><b>Screening tier: {risk['tier']}</b><br>"
+                    "A lightweight self-awareness signal based on this session's betting pattern "
+                    "(avg/max bet size, win rate, net profit) — not a diagnosis.</div>",
+                    unsafe_allow_html=True,
+                )
+                for tier,p in risk['probabilities'].items():
+                    st.write(f'{tier} — {p:.0%}'); st.progress(p)
 
 # ---------- MULTIPLAYER ----------
 else:
@@ -207,8 +368,9 @@ else:
         except Exception as e:
             st.error(f'Cannot read room: {e}'); st.stop()
         players=state['players']; you=players[0]; opp=players[1] if len(players)>1 else {'name':'Waiting…','stack':100,'hole':[],'wins':0}
-        m=st.columns(5); vals=[('You',f"{you['stack']:.1f} BB"),('Opponent',f"{opp['stack']:.1f} BB"),('Pot',f"{state['pot']:.1f} BB"),('Your wins',you.get('wins',0)),('Room',room)]
+        m=st.columns(5); vals=[('You 🪙',f"{you['stack']:.1f}"),('Opponent 🪙',f"{opp['stack']:.1f}"),('Pot 🪙',f"{state['pot']:.1f}"),('Your wins',you.get('wins',0)),('Room',room)]
         for c,(x,y) in zip(m,vals): c.metric(x,y)
+        st.markdown('<div class="section-gap"></div>',unsafe_allow_html=True)
         l,r=st.columns([1.55,1])
         with l:
             render_table(opp['name'],opp['stack'],[card_html(c) for c in opp.get('hole',[])] or [card_html(None),card_html(None)],[card_html(c) for c in state.get('board',[])]+[card_html(None)]*(5-len(state.get('board',[]))),[card_html(c) for c in you.get('hole',[])] or [card_html(None),card_html(None)],you['name'],you['stack'],state['street'],state['pot'])
@@ -230,9 +392,22 @@ else:
                 c4,c5=st.columns(2)
                 if c4.button('¾ Pot',use_container_width=True): send('bet',max(1,state['pot']*.75))
                 if c5.button('Pot',use_container_width=True): send('bet',max(1,state['pot']))
+                cust_col,btn_col=st.columns([2,1])
+                custom_bet=cust_col.number_input('🪙 Custom bet',min_value=1.0,max_value=max(1.0,you['stack']),
+                                                  value=min(max(1.0,round(state['pot']*.5,1)),max(1.0,you['stack'])),
+                                                  step=1.0,key='mp_custom_bet_input')
+                btn_col.markdown('<div style="height:1.6rem"></div>',unsafe_allow_html=True)
+                if btn_col.button('Bet',use_container_width=True): send('bet',custom_bet)
             else: st.info(f"Waiting for {opp['name']}… This page updates automatically through WebSockets.")
             if coach_on:
-                show_learning(state.get('learning_feedback'),title='Your Private Decision Review')
+                raw_feedback=state.get('learning_feedback')
+                if raw_feedback:
+                    opp_action='Opponent bet/raised' if state.get('to_call',0)>0 else 'Opponent checked'
+                    raw_feedback=rag.enrich(raw_feedback,board=' '.join(state.get('board',[])),
+                                             hole_cards=' '.join(you.get('hole',[])),opponent_action=opp_action,
+                                             pot=state.get('pot',0.0),stack=you.get('stack',0.0),
+                                             raw_action=ACTION_LABEL_TO_RAW.get(raw_feedback['chosen_action'],'call'))
+                show_learning(raw_feedback,title='Your Private Decision Review')
 
 
 st.divider()
