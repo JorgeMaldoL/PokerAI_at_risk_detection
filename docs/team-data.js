@@ -25,7 +25,7 @@ const teamMembers = [
 
         education: "Computer Science student at CUNY John Jay College, expected graduation May 2027. " +
         "Associate of Science in Computer Science from CUNY Hostos Community College.",
-        
+
         skills: [
             "Python",
             "pandas",
@@ -75,33 +75,6 @@ const teamMembers = [
         email: "",
         github: "https://github.com/althexshi",
         linkedin: "https://www.linkedin.com/in/alex-shi-ba67a9195",
-        resume: ""
-    },
-    {
-        name: "Lou",
-        role: "TODO: add your role on the team",
-        location: "TODO: add your city/state",
-        focusArea: "TODO: add your focus area",
-        bio: "TODO: write two or three sentences about yourself here. " +
-             "Talk about how you got interested in this project, what you " +
-             "have been working on, and what you want to learn next.",
-        education: "TODO: add your school/program and expected graduation, " +
-                    "or your relevant coursework and experience.",
-        skills: [
-            "TODO: add your skills"
-        ],
-        projects: [
-            {
-                title: "Poker AI Coach with Addiction Screening",
-                description: "An AI poker coach that teaches Hold'em strategy " +
-                              "while screening for loss-chasing and gambling-risk " +
-                              "behavior patterns.",
-                link: "https://github.com/JorgeMaldoL/PokerAI_at_risk_detection"
-            }
-        ],
-        email: "",
-        github: "",
-        linkedin: "",
         resume: ""
     },
     {

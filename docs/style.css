@@ -3,13 +3,15 @@
    Change these values to change the whole page's color scheme at once.
    --------------------------------------------------------------------- */
 :root {
-    --color-primary: #9b1c5f;
-    --color-primary-light: #fce8f1;
-    --color-text: #1f2933;
-    --color-text-muted: #6b7280;
-    --color-border: #e5e7eb;
-    --color-background: #ffffff;
-    --color-card-background: #ffffff;
+    --color-primary: #ff4fa8;
+    --color-primary-light: rgba(255, 79, 168, 0.16);
+    --color-text: #f4eef2;
+    --color-text-muted: #b9a9b4;
+    --color-border: #3a2a37;
+    --color-background: #120b14;
+    --color-card-background: #1d1420;
+    --color-surface: #261a29;
+    --color-code-bg: #2b1d2f;
 }
 
 /* ---------------------------------------------------------------------
@@ -68,7 +70,7 @@ body {
     border: 1px solid var(--color-border);
     border-radius: 16px;
     padding: 28px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .team-card-top {
@@ -119,7 +121,7 @@ body {
 }
 
 .info-chip {
-    background-color: #f9fafb;
+    background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 10px 16px;
@@ -178,7 +180,7 @@ body {
    Projects section
    --------------------------------------------------------------------- */
 .project-card {
-    background-color: #f9fafb;
+    background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 16px;
@@ -236,7 +238,7 @@ body {
 }
 
 .page-footer code {
-    background-color: #f3f4f6;
+    background-color: var(--color-code-bg);
     padding: 2px 6px;
     border-radius: 4px;
 }
