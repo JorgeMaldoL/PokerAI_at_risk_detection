@@ -39,10 +39,30 @@ const teamMembers = [
         projects: [
             {
                 title: "Poker AI Coach with Addiction Screening",
-                description: "An AI poker coach that teaches Hold'em strategy " +
-                              "while screening for loss-chasing and gambling-risk " +
-                              "behavior patterns.",
+                description: "A poker learning app that teaches Hold'em strategy while " +
+                            "using machine learning to identify risky gambling behaviors " +
+                            "such as loss-chasing.",
                 link: "https://github.com/JorgeMaldoL/PokerAI_at_risk_detection"
+            },
+            {
+                title: "Mental Mirror",
+                description: "An AI learning platform that helps users learn through " +
+                            "journal analysis, the Feynman Technique, speech practice, " +
+                            "and AI-generated feedback.",
+                link: "https://github.com/JorgeMaldoL/Mental-Mirror"
+            },
+            {
+                title: "FitNature Hobby Hub",
+                description: "A full-stack React app for creating and organizing fitness " +
+                            "and hobby workout groups using React, Supabase, and PostgreSQL.",
+                link: "https://github.com/JorgeMaldoL/fitnature-hobby-hub"
+            },
+            {
+                title: "CUNY Degree Helper",
+                description: "1st place winner at the 2025 CUNY GenAI Hackathon. " +
+                            "An AI academic planning tool that uses RAG to help students " +
+                            "find degree information and get answers about CUNY programs.",
+                link: "https://github.com/JorgeMaldoL/CUNY-Degree-Helper"
             }
         ],
         email: "maldonadoj747@gmail.com",
