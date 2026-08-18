@@ -1,5 +1,7 @@
 # Poker AI Coach with Addiction Screening
 
+Learn about us: <https://jorgemaldol.github.io/PokerAI_at_risk_detection/>
+
 A poker app that helps people learn Poker while also studying gambling behavior.
 
 The app collects gameplay information such as bet sizes, results, and how long a player takes to make a decision. This information can be used to look for behaviors linked to risky gambling, such as increasing bets after losing.
