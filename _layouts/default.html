@@ -11,7 +11,12 @@
   <body>
 
     <header class="page-header">
-      <div class="suit-row" aria-hidden="true">&spades; &hearts; &diams; &clubs;</div>
+      <div class="suit-row" aria-hidden="true">
+        <span class="suit-black">&spades;</span>
+        <span class="suit-red">&hearts;</span>
+        <span class="suit-red">&diams;</span>
+        <span class="suit-black">&clubs;</span>
+      </div>
       <h1>{{ site.title | default: site.github.repository_name }}</h1>
       <p class="page-subtitle">{{ site.description }}</p>
     </header>

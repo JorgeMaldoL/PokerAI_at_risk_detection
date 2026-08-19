@@ -3,18 +3,20 @@
 
 // ---------------------------------------------------------------------
 // Fully custom stylesheet — no base theme, no attribution required.
-// Dark background with a poker-table pink/felt accent.
+// Dark casino felt-green background with gold accents.
 // ---------------------------------------------------------------------
 
 :root {
-    --color-primary: #ff4fa8;
-    --color-primary-light: rgba(255, 79, 168, 0.16);
-    --color-text: #f4eef2;
-    --color-text-muted: #b9a9b4;
-    --color-border: #3a2a37;
-    --color-background: #120b14;
-    --color-surface: #1d1420;
-    --color-code-bg: #241827;
+    --color-primary: #d4af37;
+    --color-primary-light: rgba(212, 175, 55, 0.16);
+    --color-accent: #2fae74;
+    --color-red: #e0483e;
+    --color-text: #f2ede0;
+    --color-text-muted: #a89f8c;
+    --color-border: #2a3a30;
+    --color-background: #0d120f;
+    --color-surface: #17211b;
+    --color-code-bg: #1c2620;
 }
 
 * {
@@ -36,15 +38,23 @@ body {
 .page-header {
     padding: 56px 24px 32px 24px;
     text-align: center;
+    background: linear-gradient(180deg, #142019 0%, var(--color-background) 100%);
     border-bottom: 1px solid var(--color-border);
     margin-bottom: 40px;
 }
 
 .suit-row {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     letter-spacing: 0.5em;
-    color: var(--color-primary);
     margin-bottom: 16px;
+}
+
+.suit-black {
+    color: var(--color-text);
+}
+
+.suit-red {
+    color: var(--color-red);
 }
 
 .page-header h1 {
@@ -82,7 +92,7 @@ body {
 }
 
 .wrapper h3 {
-    color: #d98cba;
+    color: var(--color-accent);
     font-size: 1.15rem;
     margin: 28px 0 12px 0;
 }
@@ -108,17 +118,18 @@ body {
 }
 
 .wrapper a {
-    color: var(--color-primary);
+    color: var(--color-accent);
     font-weight: 600;
     text-decoration: none;
 }
 
 .wrapper a:hover {
     text-decoration: underline;
+    color: var(--color-primary);
 }
 
 .wrapper strong {
-    color: var(--color-text);
+    color: var(--color-primary);
 }
 
 .wrapper hr {
@@ -149,6 +160,7 @@ body {
     border-radius: 4px;
     padding: 2px 6px;
     font-size: 0.9em;
+    color: var(--color-accent);
 }
 
 .wrapper pre {
@@ -163,6 +175,7 @@ body {
     background: none;
     border: none;
     padding: 0;
+    color: var(--color-text);
 }
 
 .wrapper table {
@@ -186,7 +199,7 @@ body {
 }
 
 .wrapper tr:nth-child(even) td {
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: rgba(212, 175, 55, 0.03);
 }
 
 // ---------------------------------------------------------------------
