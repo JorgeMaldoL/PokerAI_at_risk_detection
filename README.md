@@ -224,9 +224,13 @@ The original dataset is stored in:
 
 `Data/bustabit.csv`
 
+![Sample rows from Data/bustabit.csv](images/bustabit_sample.png)
+
 After analyzing the data and creating features for each player, the processed data is stored in:
 
 `Data/player_stats.csv`
+
+![Sample rows from Data/player_stats.csv](images/player_stats_sample.png)
 
 This player-level data is what we used to train the XGBoost model.
 
