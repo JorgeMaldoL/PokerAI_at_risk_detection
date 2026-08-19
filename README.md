@@ -1,7 +1,5 @@
 # Poker AI Coach with Addiction Screening
 
-Resume: <https://jorgemaldol.github.io/PokerAI_at_risk_detection/docs/Resume_Jorge_Maldonado.pdf>
-
 This project combines a poker learning app with machine learning to study risky gambling behavior.
 
 We focused mainly on **loss-chasing**, which is when someone keeps betting or increases their bets after losing money.
@@ -258,6 +256,7 @@ This player-level data is what we used to train the XGBoost model.
 
 **Role:** Machine Learning & Backend, Data Visualization  
 **Focus:** Behavioral Risk Screening  
+**Resume:** <https://jorgemaldol.github.io/PokerAI_at_risk_detection/docs/Resume_Jorge_Maldonado.pdf>
 **GitHub:** [JorgeMaldoL](https://github.com/JorgeMaldoL)  
 **LinkedIn:** [jorge-maldonado-494640245](https://www.linkedin.com/in/jorge-maldonado-494640245)
 
