@@ -1,0 +1,78 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+// ---------------------------------------------------------------------
+// Dark + pink overrides on top of jekyll-theme-midnight
+// ---------------------------------------------------------------------
+
+body {
+    background: #120b14;
+    color: #f4eef2;
+}
+
+.wrapper {
+    max-width: 900px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #ff4fa8;
+}
+
+h3 {
+    color: #d98cba;
+}
+
+a {
+    color: #ff4fa8;
+}
+
+a:hover {
+    color: #ff8cc6;
+}
+
+#header {
+    background: #1d1420;
+    border-bottom: 1px solid #3a2a37;
+}
+
+#header nav ul li a {
+    background: #ff4fa8;
+    background-image: none;
+    color: #120b14;
+}
+
+#header nav ul li a:hover {
+    background: #ff8cc6;
+    background-image: none;
+}
+
+pre, code {
+    background: #1d1420;
+    border: 1px solid #3a2a37;
+    color: #f4eef2;
+}
+
+blockquote {
+    border-left: 3px solid #ff4fa8;
+    color: #b9a9b4;
+}
+
+table {
+    border-color: #3a2a37;
+}
+
+th {
+    color: #ff4fa8;
+    border-color: #3a2a37;
+}
+
+td {
+    border-color: #3a2a37;
+}
+
+img {
+    max-width: 100%;
+    border-radius: 8px;
+}
